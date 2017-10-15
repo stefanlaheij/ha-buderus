@@ -6,57 +6,106 @@ import logging
 from custom_components.buderus import (
     DOMAIN, BuderusBridge)
 from homeassistant.const import (
-    CONF_RESOURCES, TEMP_CELSIUS, STATE_UNKNOWN)
+    CONF_RESOURCES, TEMP_CELSIUS)
 from homeassistant.helpers.entity import Entity
 
 _LOGGER = logging.getLogger(__name__)
 
-DEPENDENCIES = ['buderus']
-
 SENSOR_TYPES = {}
 
-"""
-https://github.com/smarthomeNG/plugins/tree/master/buderus
-
-ATTR_INFO_DATETIME
-ATTR_INFO_FIRMWARE
-ATTR_INFO_HARDWARE
-ATTR_INFO_BRAND
-ATTR_INFO_HEALTH
-ATTR_OUTSIDE_TEMPERATURE
-ATTR_SUPPLY_TEMPERATURE
-ATTR_HOTWATER_TEMPERATURE
-ATTR_BOILER_FLAME
-ATTR_BOILER_STARTS
-ATTR_HEATING_CURRENT_ROOMSETPOINT
-ATTR_HEATING_MANUAL_ROOMSETPOINT
-ATTR_HEATING_TEMP_SETPOINT
-ATTR_HEATING_TEMP_ECO
-ATTR_HEATING_TEMP_COMFORT
-ATTR_HEATING_ACTIVEPROGRAM
-ATTR_HEATING_MODE
-         'hotwater_current_waterflow': [
-            'Hotwater Waterflow',
-            TEMP_CELSIUS,
-            'mdi:thermometer',
-            '/dhwCircuits/dhw1/waterFlow'
-        ],
-         'hotwater_current_workingtime': [
-            'Hotwater Workingtime',
-            TEMP_CELSIUS,
-            'mdi:thermometer',
-            '/dhwCircuits/dhw1/workingTime'
-        ],
-"""
-
 def setup_platform(hass, config, add_devices, discovery_info=None):
+
     global SENSOR_TYPES
     SENSOR_TYPES = {
+        'return_temperature': [
+            'Return Temperature',
+            TEMP_CELSIUS,
+            'mdi:thermometer',
+            '/system/sensors/temperatures/return'
+        ],
+        'heatsource_modulation': [
+            'Modulation',
+            '%',
+            'mdi:percent',
+            '/system/heatSources/hs1/actualModulation'
+        ],
         'outside_temperature': [
             'Outside Temperature',
             TEMP_CELSIUS,
             'mdi:thermometer',
             '/system/sensors/temperatures/outdoor_t1'
+        ],
+        'supply_temperature': [
+            'Supply Temperature',
+            TEMP_CELSIUS,
+            'mdi:thermometer',
+            '/system/sensors/temperatures/supply_t1'
+        ],
+        'hotwater_temperature': [
+            'Hotwater Temperature',
+            TEMP_CELSIUS,
+            'mdi:thermometer',
+            '/system/sensors/temperatures/hotWater_t2'
+        ],
+         'room_temperature': [
+            'Room Temperature',
+            TEMP_CELSIUS,
+            'mdi:thermometer',
+            '/heatingCircuits/hc1/roomtemperature'
+        ],
+         'heating_current_roomsetpoint': [
+            'Heating Room Setpoint',
+            TEMP_CELSIUS,
+            'mdi:thermometer',
+            '/heatingCircuits/hc1/currentRoomSetpoint'
+        ],
+         'heating_manual_roomsetpoint': [
+            'Heating Manual Room Setpoint',
+            TEMP_CELSIUS,
+            'mdi:thermometer',
+            '/heatingCircuits/hc1/manualRoomSetpoint'
+        ],
+         'heating_temp_roomsetpoint': [
+            'Heating Temporary Room Setpoint',
+            TEMP_CELSIUS,
+            'mdi:thermometer',
+            '/heatingCircuits/hc1/temporaryRoomSetpoint'
+        ],
+         'heating_templevel_eco': [
+            'Heating Eco Temperature',
+            TEMP_CELSIUS,
+            'mdi:thermometer',
+            '/heatingCircuits/hc1/temperatureLevels/eco'
+        ],
+         'heating_templevel_comfort': [
+            'Heating Comfort Temperature',
+            TEMP_CELSIUS,
+            'mdi:thermometer',
+            '/heatingCircuits/hc1/temperatureLevels/comfort2'
+        ],
+         'heating_activeprogram': [
+            'Heating Active Program',
+            None,
+            None,
+            '/heatingCircuits/hc1/activeSwitchProgram'
+        ],
+         'heating_operation_mode': [
+            'Heating Operation Mode',
+            None,
+            None,
+            '/heatingCircuits/hc1/operationMode'
+        ],
+        'boiler_flame': [
+            'Boiler Flame',
+            None,
+            None,
+            '/heatSources/flameStatus'
+        ],
+         'boiler_starts': [
+            'Boiler Starts',
+            None,
+            None,
+            '/heatSources/hs1/numberOfStarts'
         ],
          'hotwater_current_temperature': [
             'Hotwater Temperature',
@@ -65,10 +114,34 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             '/dhwCircuits/dhw1/actualTemp'
         ],
          'hotwater_current_setpoint': [
-            'Hotwater Current Setpoint',
+            'Hotwater Setpoint',
             TEMP_CELSIUS,
             'mdi:thermometer',
             '/dhwCircuits/dhw1/currentSetpoint'
+        ],
+        'hotwater_current_waterflow': [
+            'Hotwater Waterflow',
+            None,
+            None,
+            '/dhwCircuits/dhw1/waterFlow'
+        ],
+         'hotwater_current_workingtime': [
+            'Hotwater Workingtime',
+            None,
+            None,
+            '/dhwCircuits/dhw1/workingTime'
+        ],
+         'pump_modulation': [
+            'Pump Modulation',
+            None,
+            None,
+            '/system/appliance/CHpumpModulation'
+        ],
+         'system_pressure': [
+            'System Pressure',
+            None,
+            None,
+            '/system/appliance/systemPressure'
         ],
     }
 
@@ -85,7 +158,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
         sensors.append(
             BuderusSensor(
-                hass,
                 name="%s %s" % (bridge.name, SENSOR_TYPES[sensor_type][0]),
                 bridge=bridge,
                 sensor_type=sensor_type,
@@ -101,7 +173,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class BuderusSensor(Entity):
     """Representation of a Buderus sensor."""
 
-    def __init__(self, hass, name, bridge: BuderusBridge, sensor_type, unit, icon, km_id):
+    def __init__(self, name, bridge: BuderusBridge, sensor_type, unit, icon, km_id):
         """Initialize the Buderus sensor."""
         self._name = name
         self._bridge = bridge
