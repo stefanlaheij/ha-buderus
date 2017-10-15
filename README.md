@@ -22,6 +22,25 @@ sensor:
   - platform: buderus
     resources:
       - outside_temperature
+      - supply_temperature
+      - return_temperature
+      - room_temperature
+      - hotwater_temperature
+      - heating_current_roomsetpoint
+      - heating_manual_roomsetpoint
+      - heating_temp_roomsetpoint
       - hotwater_current_temperature
       - hotwater_current_setpoint
+      - hotwater_current_workingtime
+      - hotwater_current_waterflow
+      - heatsource_modulation
+      - heating_templevel_eco
+      - heating_templevel_comfort
+      - heating_activeprogram
+      - heating_operation_mode
+      - boiler_flame
+      - boiler_starts
+      - pump_modulation
+      - system_pressure
+      
 ```
