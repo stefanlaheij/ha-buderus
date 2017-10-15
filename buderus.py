@@ -1,7 +1,5 @@
 """
-Support to read a Buderus KM200 unit.
-
-Create password at https://ssl-account.com/km200.andreashahn.info/
+Support to communicate with a Buderus KM200 unit.
 """
 
 import logging
@@ -67,7 +65,7 @@ class BuderusBridge(object):
     def _encrypt(self, plain):
         plain = plain + (AES.block_size - len(plain) % self.BS) * self.PAD
         encobj = AES.new(self._key, AES.MODE_ECB)
-        data = encobj.encrypt(plain)
+        data = encobj.encrypt(plain.encode())
         self.logger.debug("Buderus encrypted data: {} -- Base64 encoded: {}".format(data, base64.b64encode(data)))
         return base64.b64encode(data)
 
@@ -93,7 +91,11 @@ class BuderusBridge(object):
             
     def _get_value(self, j):
         return j['value']
-"""
+        
+    def _json_encode(self, value):
+        d = {"value": value}
+        return json.dumps([d])
+        
     def _set_data(self, path, data):
         try:
             url = 'http://' + self._host + path
@@ -108,10 +110,7 @@ class BuderusBridge(object):
             self.logger.error("Buderus error happened at {}: {}".format(url, e))
             return None
 
-    def _json_encode(self, value):
-        d = {"value": value}
-        return json.dumps([d])
-
+"""
     def _get_type(self, j):
         return j['type']
 
