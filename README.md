@@ -1,5 +1,5 @@
 # ha-buderus
-Home Assistant component for communicating with Buderus and Nefit IP modules
+Home Assistant component for communicating with Buderus KM200/KM50 and Nefit IP modules used in Enviline (Tower) heatpump systems.
 
 ## Installation
 
