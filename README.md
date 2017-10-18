@@ -10,7 +10,7 @@ Home Assistant component for communicating with Buderus and Nefit IP modules
 Create a password at https://ssl-account.com/km200.andreashahn.info/ by entering your device password (from sticker or menu) and your personal password.
 
 ## Issues
-The thermostat does not yet succesfully update the setpoint. Help on this is appreciated.
+**FIXED:** The thermostat does not yet succesfully update the setpoint. Help on this is appreciated.
 
 ## Configuration
 
