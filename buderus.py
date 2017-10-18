@@ -66,7 +66,6 @@ class BuderusBridge(object):
         plain = plain + (AES.block_size - len(plain) % self.BS) * self.PAD
         encobj = AES.new(self._key, AES.MODE_ECB)
         data = encobj.encrypt(plain.encode())
-        self.logger.debug("Buderus encrypted data: {} -- Base64 encoded: {}".format(data, base64.b64encode(data)))
         return base64.b64encode(data)
 
     def _get_data(self, path):
@@ -94,7 +93,7 @@ class BuderusBridge(object):
         
     def _json_encode(self, value):
         d = {"value": value}
-        return json.dumps([d])
+        return json.dumps(d)
         
     def _set_data(self, path, data):
         try:
@@ -109,6 +108,12 @@ class BuderusBridge(object):
         except Exception as e:
             self.logger.error("Buderus error happened at {}: {}".format(url, e))
             return None
+            
+    def _submit_data(self, path, data):
+        self.logger.info("Buderus SETTING {} to {}".format(path, data))
+        payload = self._json_encode(data)
+        self.logger.debug(payload)
+        req = self._set_data(path, self._encrypt(str(payload)))
 
 """
     def _get_type(self, j):
@@ -128,12 +133,6 @@ class BuderusBridge(object):
                 return None
         elif value_type == "floatValue":
             return {"minValue": j['minValue'], "maxValue": j['maxValue']}
-
-    def _submit_data(self, item, id):
-        self.logger.info("Buderus SETTING {} to {}".format(item, item()))
-        payload = self._json_encode(item())
-        self.logger.debug(payload)
-        req = self._set_data(id, self._encrypt(str(payload)))
 
     def update_item(self, item, caller=None, source=None, dest=None):
         if caller != "Buderus":

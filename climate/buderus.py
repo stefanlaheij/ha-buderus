@@ -9,8 +9,6 @@ from custom_components.buderus import (
     DOMAIN, BuderusBridge)
 from homeassistant.components.climate import ClimateDevice
 
-_LOGGER = logging.getLogger(__name__)
-
 def setup_platform(hass, config, add_devices, discovery_info=None):
     bridge = hass.data[DOMAIN]
 
@@ -26,6 +24,7 @@ class BuderusThermostat(ClimateDevice):
 
     def __init__(self,name, bridge):
         """Initialize the thermostat."""
+        self.logger = logging.getLogger(__name__)
         self._name = name
         self._bridge = bridge
         self._current_temperature = None
@@ -56,22 +55,18 @@ class BuderusThermostat(ClimateDevice):
         temperature = kwargs.get(ATTR_TEMPERATURE)
         if temperature is None:
             return
-        data = self._bridge._json_encode(temperature)
-        self._bridge._set_data('/heatingCircuits/hc1/manualRoomSetpoint', self._bridge._encrypt(data))
+        self._bridge._submit_data('/heatingCircuits/hc1/temperatureRoomSetpoint', temperature)
         self._target_temperature = temperature
 
     def update(self):
         """Get the latest data."""
-        _LOGGER.info("Buderus fetching data...")
-        
         plain = self._bridge._get_data('/heatingCircuits/hc1/roomtemperature')
         if plain is not None:
             data = self._bridge._get_json(plain)
             self._current_temperature = self._bridge._get_value(data)
-            
-        plain = self._bridge._get_data('/heatingCircuits/hc1/manualRoomSetpoint')
-        if plain is not None:
-            data = self._bridge._get_json(plain)
-            self._target_temperature = self._bridge._get_value(data)
-            
-        _LOGGER.info("Buderus fetching data done.")
+        
+        if self._target_temperature is None:
+            plain = self._bridge._get_data('/heatingCircuits/hc1/temperatureRoomSetpoint')
+            if plain is not None:
+                data = self._bridge._get_json(plain)
+                self._target_temperature = self._bridge._get_value(data)
