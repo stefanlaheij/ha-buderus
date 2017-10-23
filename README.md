@@ -47,3 +47,6 @@ sensor:
       - system_pressure
       
 ```
+
+## Credits
+Special thanks to Raoul Thill for sharing his Python code to communicate with the module: https://github.com/rthill/buderus
