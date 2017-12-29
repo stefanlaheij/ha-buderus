@@ -3,11 +3,15 @@ Platform to control a Buderus KM200 unit.
 """
 import logging
 
+from homeassistant.components.climate import (
+    ClimateDevice, SUPPORT_TARGET_TEMPERATURE)
 from homeassistant.const import (
     TEMP_CELSIUS, ATTR_TEMPERATURE)
 from custom_components.buderus import (
     DOMAIN, BuderusBridge)
 from homeassistant.components.climate import ClimateDevice
+
+SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE)
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     bridge = hass.data[DOMAIN]
@@ -22,7 +26,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class BuderusThermostat(ClimateDevice):
     """Representation of a Buderus thermostat."""
 
-    def __init__(self,name, bridge):
+    def __init__(self, name, bridge):
         """Initialize the thermostat."""
         self.logger = logging.getLogger(__name__)
         self._name = name
@@ -34,6 +38,11 @@ class BuderusThermostat(ClimateDevice):
     def name(self):
         """Return the name of the thermostat, if any."""
         return self._name
+
+    @property
+    def supported_features(self):
+        """Return the list of supported features."""
+        return SUPPORT_FLAGS
 
     @property
     def temperature_unit(self):
