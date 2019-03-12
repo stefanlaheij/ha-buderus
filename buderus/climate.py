@@ -3,13 +3,10 @@ Platform to control a Buderus KM200 unit.
 """
 import logging
 
-from homeassistant.components.climate import (
-    ClimateDevice, SUPPORT_TARGET_TEMPERATURE)
-from homeassistant.const import (
-    TEMP_CELSIUS, ATTR_TEMPERATURE)
-from custom_components.buderus import (
-    DOMAIN, BuderusBridge)
+from homeassistant.const import (TEMP_CELSIUS, ATTR_TEMPERATURE)
 from homeassistant.components.climate import ClimateDevice
+from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
+from custom_components.buderus import (DOMAIN, BuderusBridge)
 
 SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE)
 
